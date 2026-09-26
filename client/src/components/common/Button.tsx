@@ -1,8 +1,7 @@
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
     variant?: 'primary' | 'secondary' | 'glow';
     className?: string;
-    [key: string]: any;
 }
 
 const Button = ({ children, variant = 'primary', className = '', ...props }: ButtonProps) => {
