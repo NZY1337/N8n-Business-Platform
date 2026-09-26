@@ -32,7 +32,7 @@ export class SupabaseAuthGuard implements CanActivate {
         request.user = {
             id: user.id,
             email: user.email,
-            avatar: user.user_metadata.avatar_url,
+            avatar: user.user_metadata.avatar_url ?? null,
             name: user.user_metadata.full_name,
         };
 

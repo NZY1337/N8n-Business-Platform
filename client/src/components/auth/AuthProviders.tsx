@@ -13,14 +13,14 @@ function AuthProviders({ provider }: { provider: AuthProvidersProps }) {
                 return <>
                     <button onClick={() => login('google')} className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-5 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                         <img src={googleLogo} alt="" />
-                        Sign up with Google
+                        Continue with Google
                     </button>
                 </>
             case 'facebook':
                 return <>
                     <button onClick={() => login('facebook')} className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-5 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                         <img src={facebookLogo} alt="" />
-                        Sign up with Facebook
+                        Continue with Facebook
                     </button>
                 </>
             default:

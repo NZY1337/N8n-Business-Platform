@@ -4,6 +4,6 @@ export class CreateUserDto {
     id: string;
     email: string;
     name: string;
-    avatar: string;
+    avatar: string | null;
     plan: Plan;
 }

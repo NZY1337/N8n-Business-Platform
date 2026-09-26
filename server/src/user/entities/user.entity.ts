@@ -12,8 +12,9 @@ export class UserEntity {
     @Column()
     name: string;
 
-    @Column()
-    avatar: string;
+    // Email/password accounts have no avatar_url in Supabase metadata
+    @Column({ nullable: true })
+    avatar: string | null;
 
     @Column({ type: 'enum', enum: Plan, default: Plan.FREE })
     plan: Plan;

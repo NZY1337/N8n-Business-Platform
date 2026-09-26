@@ -2,6 +2,7 @@ import React from "react";
 import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
+import streamloopIcon from "../../assets/streamloop-icon.svg";
 
 export default function AuthLayout({
     children,
@@ -16,14 +17,17 @@ export default function AuthLayout({
                     <div className="relative flex items-center justify-center z-1">
                         <GridShape />
                         <div className="flex flex-col items-center max-w-xs">
-                            <Link to="/" className="block mb-4">
+                            <Link to="/" className="block">
                                 <div className="flex items-center gap-4">
                                     <div className="w-25 h-25 bg-black flex items-center justify-center">
-                                        <span className="text-[#DFFF00] font-black text-7xl italic">F</span>
+                                        <img src={streamloopIcon} alt="Streamloop" className="w-14 h-14" />
                                     </div>
-                                    <span className="font-black text-7xl tracking-tighter text-white uppercase italic">Fitforge</span>
+                                    <span className="font-black text-7xl tracking-tighter text-white uppercase italic">Streamloop</span>
                                 </div>
                             </Link>
+                            <p className="text-white/70 text-sm tracking-wide text-left w-full">
+                                Automations that run your business, not the other way around.
+                            </p>
                         </div>
                     </div>
                 </div>

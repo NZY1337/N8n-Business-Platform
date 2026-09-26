@@ -8,6 +8,8 @@ type AppContextType = {
     sessionLoaded: boolean
     logout: () => Promise<void>
     login: (provider: Provider) => Promise<void>
+    loginWithPassword: (email: string, password: string) => Promise<{ error: string | null }>
+    signUpWithPassword: (email: string, password: string, fullName: string) => Promise<{ error: string | null; needsConfirmation: boolean }>
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -32,6 +34,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         })
     }
 
+    const loginWithPassword = async (email: string, password: string) => {
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        return { error: error?.message ?? null }
+    }
+
+    // full_name is what SupabaseAuthGuard reads into request.user.name
+    const signUpWithPassword = async (email: string, password: string, fullName: string) => {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: { full_name: fullName },
+                emailRedirectTo: `${window.location.origin}/dashboard`,
+            },
+        })
+        return { error: error?.message ?? null, needsConfirmation: !error && !data.session }
+    }
+
     useEffect(() => {
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
@@ -48,7 +68,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     return (
-        <AppContext.Provider value={{ session, sessionLoaded, logout, login }}>
+        <AppContext.Provider value={{ session, sessionLoaded, logout, login, loginWithPassword, signUpWithPassword }}>
             {children}
         </AppContext.Provider>
     )
