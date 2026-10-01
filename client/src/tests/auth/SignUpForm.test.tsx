@@ -85,7 +85,7 @@ describe("SignUpForm", () => {
         await fillValidForm(user, { repeatPassword: "" });
         await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-        expect(await screen.findByText("All fields are required.")).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent("All fields are required.");
         expect(signUpWithPassword).not.toHaveBeenCalled();
     });
 
@@ -96,9 +96,9 @@ describe("SignUpForm", () => {
         await fillValidForm(user, { password: "short1", repeatPassword: "short1" });
         await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-        expect(
-            await screen.findByText("Password must be at least 8 characters."),
-        ).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent(
+            "Password must be at least 8 characters.",
+        );
         expect(signUpWithPassword).not.toHaveBeenCalled();
     });
 
@@ -109,7 +109,7 @@ describe("SignUpForm", () => {
         await fillValidForm(user, { repeatPassword: "different1" });
         await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-        expect(await screen.findByText("Passwords do not match.")).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent("Passwords do not match.");
         expect(signUpWithPassword).not.toHaveBeenCalled();
     });
 
@@ -120,9 +120,9 @@ describe("SignUpForm", () => {
         await fillValidForm(user, { acceptTerms: false });
         await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-        expect(
-            await screen.findByText("You must accept the Terms and Conditions."),
-        ).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent(
+            "You must accept the Terms and Conditions.",
+        );
         expect(signUpWithPassword).not.toHaveBeenCalled();
     });
 
@@ -162,12 +162,9 @@ describe("SignUpForm", () => {
         await fillValidForm(user, { email: "ada@example.com" });
         await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-        // Alert renders "{title}: " and "{message}" as separate text nodes, so
-        // match each loosely instead of the combined, exact string.
-        expect(await screen.findByText(/check your email/i)).toBeInTheDocument();
-        expect(
-            screen.getByText(/We sent a confirmation link to ada@example\.com/),
-        ).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent(
+            "We sent a confirmation link to ada@example.com",
+        );
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 
@@ -182,7 +179,7 @@ describe("SignUpForm", () => {
         await fillValidForm(user);
         await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
-        expect(await screen.findByText("User already registered")).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent("User already registered");
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 

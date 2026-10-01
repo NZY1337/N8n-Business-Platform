@@ -1,18 +1,21 @@
 import { createContext, useState, useContext, useEffect } from 'react'
 import type React from 'react'
-import type { Session, Provider } from '@supabase/supabase-js'
+import type { Context } from 'react'
+import type { Session, Provider, AuthError, User } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase'
 
-type AppContextType = {
+export type AppContextType = {
     session: Session | null
     sessionLoaded: boolean
     logout: () => Promise<void>
     login: (provider: Provider) => Promise<void>
     loginWithPassword: (email: string, password: string) => Promise<{ error: string | null }>
     signUpWithPassword: (email: string, password: string, fullName: string) => Promise<{ error: string | null; needsConfirmation: boolean }>
+    forgotPasswordEmail: (email: string) => Promise<{ data: object | null, error: AuthError | null }>
+    resetPassword: (password: string) => Promise<{ data: { user: User | null }, error: AuthError | null }>
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined)
+const AppContext: Context<AppContextType | undefined> = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null)
@@ -49,13 +52,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 emailRedirectTo: `${window.location.origin}/dashboard`,
             },
         })
+
         return { error: error?.message ?? null, needsConfirmation: !error && !data.session }
+    }
+
+    const forgotPasswordEmail = async (email: string) => {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password`
+        });
+        return { data, error }
+    }
+
+    const resetPassword = async (password: string) => {
+        const { data, error } = await supabase.auth.updateUser({ password });
+        return { data, error }
+    }
+
+    const logout = async () => {
+        await supabase.auth.signOut()
     }
 
     useEffect(() => {
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session)
-            setSessionLoaded(true)
+            setSession(session);
+            setSessionLoaded(true);
         })
 
         return () => {
@@ -63,12 +83,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
     }, [])
 
-    const logout = async () => {
-        await supabase.auth.signOut()
-    }
-
     return (
-        <AppContext.Provider value={{ session, sessionLoaded, logout, login, loginWithPassword, signUpWithPassword }}>
+        <AppContext.Provider value={{
+            session,
+            sessionLoaded,
+            login,
+            loginWithPassword,
+            signUpWithPassword,
+            forgotPasswordEmail,
+            resetPassword,
+            logout,
+
+        }}>
             {children}
         </AppContext.Provider>
     )

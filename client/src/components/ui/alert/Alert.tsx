@@ -13,7 +13,7 @@ export default function Alert({ variant, title, message }: AlertProps) {
     };
 
     return (
-        <div className={`rounded-lg border px-4 py-3 text-sm ${styles[variant]}`}>
+        <div role="alert" className={`rounded-lg border px-4 py-3 text-sm ${styles[variant]}`}>
             <span className="font-semibold">{title}: </span>
             {message}
         </div>

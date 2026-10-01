@@ -12,8 +12,10 @@ export class UserEntity {
     @Column()
     name: string;
 
-    // Email/password accounts have no avatar_url in Supabase metadata
-    @Column({ nullable: true })
+    // Email/password accounts have no avatar_url in Supabase metadata.
+    // type must be explicit: with a `string | null` property, TypeORM can't
+    // infer the Postgres column type from TS reflection metadata (it sees "Object").
+    @Column({ type: 'varchar', nullable: true })
     avatar: string | null;
 
     @Column({ type: 'enum', enum: Plan, default: Plan.FREE })

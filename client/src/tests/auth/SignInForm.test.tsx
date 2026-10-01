@@ -50,7 +50,9 @@ describe("SignInForm", () => {
 
         await user.click(screen.getByRole("button", { name: "Sign in" }));
 
-        expect(await screen.findByText("Email and password are required.")).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent(
+            "Email and password are required.",
+        );
         expect(loginWithPassword).not.toHaveBeenCalled();
     });
 
@@ -78,7 +80,7 @@ describe("SignInForm", () => {
         await user.type(screen.getByPlaceholderText("Enter your password"), "wrong-pass");
         await user.click(screen.getByRole("button", { name: "Sign in" }));
 
-        expect(await screen.findByText("Invalid login credentials")).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent("Invalid login credentials");
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 
