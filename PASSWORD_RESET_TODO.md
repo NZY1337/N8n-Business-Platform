@@ -33,6 +33,11 @@ the `'recovery'` value `_exchangeCodeForSession` actually computes. Result:
 `isPasswordRecovery` guard in `ResetPasswordForm` never opens and the user
 gets bounced straight to `/dashboard`.
 
+(Update: `isPasswordRecovery` itself was later removed from `AppContext`/
+`ResetPasswordForm` entirely — the form no longer gates on it, see git log.
+This entry is kept as-is for the PKCE/auth-js bug history, not as a
+description of current behavior.)
+
 Reverted to the default `implicit` flow (now just `createClient(url, key)`,
 no auth options), with a comment in `supabase.ts` explaining why, so nobody
 re-introduces PKCE here without knowing it breaks recovery on this library
@@ -58,3 +63,28 @@ specific handling for that error — it just shows the generic error message.
 message or a cooldown/disabled state on the button after a send, to avoid
 users repeatedly hitting the rate limit and seeing a confusing Supabase error
 string.
+
+## 6. CAPTCHA on forgot-password (and sign-up)
+
+Supabase's own server-side rate limit is currently the only thing stopping
+someone from scripting repeated `resetPasswordForEmail` calls against an
+arbitrary address — each successful call sends a real email, so this is an
+email-bombing/harassment vector against whoever owns that address, and (with
+the Gmail SMTP from item #1 still in place) a way to get the sending account
+throttled or flagged. The same applies to `signUp` — unlimited automated
+account creation.
+
+Supabase supports hCaptcha or Cloudflare Turnstile natively: both
+`resetPasswordForEmail` and `signUp` accept `options.captchaToken`.
+
+**Action, before going live:**
+1. Create an hCaptcha or Turnstile site key (either works — Turnstile is
+   usually the less annoying one for real users).
+2. `Authentication → Attack Protection → Enable CAPTCHA protection` in the
+   Supabase dashboard, paste the secret key.
+3. Add the widget to `ForgotPasswordForm.tsx` and `SignUpForm.tsx`, pass the
+   resulting token as `options.captchaToken` in `AppContext.tsx`'s
+   `forgotPasswordEmail`/`signUpWithPassword`.
+
+Not urgent at current scale (no real traffic yet), but don't ship this to the
+public with an open signup/reset form and no CAPTCHA.
